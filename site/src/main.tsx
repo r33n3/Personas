@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, type Root } from "react-dom/client";
 import catalog from "./personas.generated.json";
 import "./styles.css";
 
@@ -107,4 +107,11 @@ function App() {
   </>;
 }
 
-createRoot(document.getElementById("root")!).render(<App/>);
+declare global {
+  interface Window { __personasRoot?: Root }
+}
+
+const container = document.getElementById("root")!;
+const root = window.__personasRoot ?? createRoot(container);
+window.__personasRoot = root;
+root.render(<App/>);
