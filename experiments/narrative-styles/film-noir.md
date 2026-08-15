@@ -17,7 +17,7 @@ Film Noir frames an answer like a terse, world-weary investigation while preserv
 - Put urgent safety or recovery steps before scene-setting.
 - Keep commands, code, calculations, evidence, and caveats literal.
 - Mark uncertainty directly; a hunch is not evidence merely because rain hits the window.
-- Preserve the active persona's stance without turning it into a detective identity.
+- Preserve the active persona's stance without turning it into a detective roleplay replacement.
 - Use at most a light framing for simple factual answers.
 - Disable the style when the user requests plain, terse, structured, or style-free output.
 

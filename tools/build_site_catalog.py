@@ -10,12 +10,18 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 import yaml
 
+from attitudes import apply_variant, build_instruction, resolve_profiles, role_lens_instruction
+from persona_similarity import compare_personas
+
 ROOT = Path(__file__).resolve().parents[1]
 PERSONAS = ROOT / "personas"
+ROLES = ROOT / "roles"
 PROFILES = ROOT / "profiles"
 SITE = ROOT / "site"
 OUTPUT_JSON = SITE / "src" / "personas.generated.json"
 PUBLIC_JSON = SITE / "public" / "catalog.json"
+ROLE_OUTPUT_JSON = SITE / "src" / "roles.generated.json"
+ROLE_PUBLIC_JSON = SITE / "public" / "roles.json"
 DOWNLOADS = SITE / "public" / "downloads"
 CATEGORY_ORDER = {
     "computing-history": 0, "internet-culture": 1, "it-and-engineering": 2,
@@ -36,6 +42,16 @@ def first_example(path: Path) -> dict[str, str]:
     return {
         "prompt": prompt.group(1).strip() if prompt else "",
         "response": response.group(1).strip() if response else "",
+    }
+
+
+def first_role_example(path: Path) -> dict[str, str]:
+    text = path.read_text(encoding="utf-8")
+    prompt = re.search(r"\*\*User:\*\*\s*(.+)", text)
+    focus = re.search(r"\*\*Lens focus:\*\*\s*(.+)", text)
+    return {
+        "prompt": prompt.group(1).strip() if prompt else "",
+        "focus": focus.group(1).strip() if focus else "",
     }
 
 
@@ -134,34 +150,72 @@ def catalog_experience(experience: dict) -> dict | None:
     }
 
 
+def catalog_behavior(profile_names: list[str], profile_index: dict) -> list[dict]:
+    behavior = []
+    for profile_name in profile_names:
+        profile = profile_index[profile_name]
+        for rule_name, rule in profile["behavior"].items():
+            behavior.append({
+                "profile": profile_name,
+                "rule": rule_name.replace("_", " "),
+                "when": rule.get("when", "generally").replace("_", " "),
+                "actions": [action.replace("_", " ") for action in rule["actions"]],
+            })
+    return behavior
+
+
+def catalog_variants(persona: dict, profile_index: dict) -> list[dict]:
+    variants = []
+    for path in sorted((PERSONAS / persona["name"] / "variants").glob("*.yaml")):
+        variant = load_yaml(path)
+        resolution = apply_variant(persona, variant["name"])
+        resolved = resolution["persona"]
+        profile_names = list(dict.fromkeys(persona["extends"] + resolution["additional_profiles"]))
+        variants.append({
+            "name": variant["name"],
+            "displayName": humanize_voice(variant["name"]).title(),
+            "description": variant["description"],
+            "profiles": profile_names,
+            "presentation": resolved["presentation"],
+            "voice": catalog_voice(resolved.get("voice", {})),
+            "experience": catalog_experience(resolved.get("experience", {})),
+            "preferences": resolved["preferences"],
+            "behavior": catalog_behavior(profile_names, profile_index),
+            "instructions": build_instruction(
+                resolved, resolve_profiles(resolved, resolution["additional_profiles"])
+            ),
+        })
+    return variants
+
+
 def main() -> int:
     profile_index = {path.stem: load_yaml(path) for path in PROFILES.glob("*.yaml")}
     records = []
+    persona_documents = {}
     DOWNLOADS.mkdir(parents=True, exist_ok=True)
     OUTPUT_JSON.parent.mkdir(parents=True, exist_ok=True)
 
     for persona_path in PERSONAS.glob("*/persona.yaml"):
         package = persona_path.parent
         persona = load_yaml(persona_path)
-        behavior = []
-        for profile_name in persona["extends"]:
-            profile = profile_index[profile_name]
-            for rule_name, rule in profile["behavior"].items():
-                behavior.append({
-                    "profile": profile_name,
-                    "rule": rule_name.replace("_", " "),
-                    "when": rule.get("when", "generally").replace("_", " "),
-                    "actions": [action.replace("_", " ") for action in rule["actions"]],
-                })
+        persona_documents[persona["name"]] = persona
+        behavior = catalog_behavior(persona["extends"], profile_index)
 
         slug = persona["name"]
         with ZipFile(DOWNLOADS / f"{slug}.zip", "w", compression=ZIP_DEFLATED) as archive:
             for filename in ("SKILL.md", "persona.yaml", "examples.md"):
                 archive.write(package / filename, arcname=f"{slug}/{filename}")
+            for variant_path in sorted((package / "variants").glob("*.yaml")):
+                archive.write(
+                    variant_path,
+                    arcname=f"{slug}/variants/{variant_path.name}",
+                )
 
         records.append({
             "name": slug,
             "displayName": persona["display_name"],
+            "family": persona.get("persona_family"),
+            "signature": persona.get("persona_signature", []),
             "category": persona["category"],
             "description": persona["description"],
             "profiles": persona["extends"],
@@ -171,6 +225,8 @@ def main() -> int:
             "behavioralDepth": catalog_behavioral_depth(persona),
             "preferences": persona["preferences"],
             "behavior": behavior,
+            "variants": catalog_variants(persona, profile_index),
+            "related": [],
             "instructions": skill_instructions(package / "SKILL.md"),
             "example": first_example(package / "examples.md"),
             "image": f"images/{slug}.webp",
@@ -179,10 +235,63 @@ def main() -> int:
         })
 
     records.sort(key=lambda item: (CATEGORY_ORDER[item["category"]], item["displayName"].lower()))
+    for record in records:
+        source = persona_documents[record["name"]]
+        candidates = []
+        for other in records:
+            if other["name"] == record["name"]:
+                continue
+            result = compare_personas(source, persona_documents[other["name"]])
+            if result["same_family"] or max(result["behavioral"], result["character"]) >= 0.45:
+                reason = (
+                    "Same persona family"
+                    if result["same_family"]
+                    else "Shared behavior"
+                    if result["behavioral"] >= result["character"]
+                    else "Related presentation"
+                )
+                candidates.append((result["same_family"], max(result["behavioral"], result["character"]), other, reason))
+        candidates.sort(key=lambda item: (-int(item[0]), -item[1], item[2]["displayName"].lower()))
+        record["related"] = [
+            {"name": other["name"], "displayName": other["displayName"], "reason": reason}
+            for _, _, other, reason in candidates[:3]
+        ]
     rendered = json.dumps(records, indent=2, ensure_ascii=False) + "\n"
     OUTPUT_JSON.write_text(rendered, encoding="utf-8")
     PUBLIC_JSON.write_text(rendered, encoding="utf-8")
-    print(f"Built website catalog and {len(records)} persona bundles.")
+
+    role_records = []
+    role_downloads = DOWNLOADS / "roles"
+    role_downloads.mkdir(parents=True, exist_ok=True)
+    for role_path in sorted(ROLES.glob("*/role.yaml")):
+        package = role_path.parent
+        role = load_yaml(role_path)
+        slug = role["name"]
+        with ZipFile(role_downloads / f"{slug}.zip", "w", compression=ZIP_DEFLATED) as archive:
+            for filename in ("role.yaml", "examples.md"):
+                archive.write(package / filename, arcname=f"{slug}/{filename}")
+        role_records.append({
+            "name": slug,
+            "displayName": role["display_name"],
+            "category": role["category"],
+            "description": role["description"].strip(),
+            "optimizesFor": role["optimizes_for"],
+            "noticesFirst": role["notices_first"],
+            "recurringConcerns": role.get("recurring_concerns", []),
+            "reviewQuestions": role.get("review_questions", []),
+            "instructions": "\n".join(role_lens_instruction(role)) + "\n",
+            "example": first_role_example(package / "examples.md"),
+            "download": f"downloads/roles/{slug}.zip",
+            "source": f"https://github.com/r33n3/Personas/tree/main/roles/{slug}",
+        })
+    role_records.sort(key=lambda item: (item["category"], item["displayName"].lower()))
+    rendered_roles = json.dumps(role_records, indent=2, ensure_ascii=False) + "\n"
+    ROLE_OUTPUT_JSON.write_text(rendered_roles, encoding="utf-8")
+    ROLE_PUBLIC_JSON.write_text(rendered_roles, encoding="utf-8")
+    print(
+        f"Built website catalog, {len(records)} persona bundles, "
+        f"and {len(role_records)} Role Lens bundles."
+    )
     return 0
 
 

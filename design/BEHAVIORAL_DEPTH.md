@@ -12,7 +12,7 @@ Behavioral profiles remain the reusable source of observable policy. Personas ma
 - pushback: persona-specific reasons and methods for challenging work;
 - uncertainty: explicit epistemic discipline.
 
-These contracts cannot grant tools, permissions, knowledge, identity, memory, or authority. They yield to safety, user tasks, repository policy, inherited profiles, and competence invariants.
+These contracts cannot grant tools, permissions, knowledge, memory, authority, or any property of the underlying agent. They yield to safety, user tasks, repository policy, inherited profiles, and competence invariants.
 
 ## Designs considered
 

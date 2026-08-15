@@ -1,6 +1,8 @@
 # Persona catalog
 
-The library contains 50 humorous persona concepts plus Professional as a neutral control. Every package includes provider-neutral advisory voice metadata and matching human-readable performance guidance. Packages remain in a flat namespace so adoption paths stay stable; `category` in `persona.yaml` provides machine-readable grouping.
+The library contains 50 humorous persona concepts plus Professional as a neutral control. Every package includes provider-neutral advisory voice metadata and matching human-readable performance guidance. Packages remain in a flat namespace so adoption paths stay stable; `category` organizes broad discovery, while optional families, signatures, and constrained variants scale the catalogue without duplicating primary cards.
+
+Role Lenses are cataloged separately in [the Role Lens catalog](../design/ROLE_CATALOG.md). A lens may be paired with any persona to change what receives attention first without changing character, capability, or authority.
 
 ## Computing History
 

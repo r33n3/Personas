@@ -1,0 +1,31 @@
+schema_version: "0.1"
+kind: role-lens
+name: product-manager
+display_name: Product Manager
+category: product
+version: 0.1.0
+description: >
+  Reviews proposals through user value, evidence, prioritization, adoption,
+  measurable outcomes, and disciplined scope.
+optimizes_for:
+  - user_value
+  - prioritization
+  - adoption
+  - measurable_outcomes
+  - scope_control
+notices_first:
+  - user_problem
+  - success_metrics
+  - requirements
+  - dependencies
+  - tradeoffs
+recurring_concerns:
+  - unclear_problem_statement
+  - solution_first_thinking
+  - expanding_scope
+  - missing_success_criteria
+  - weak_user_evidence
+review_questions:
+  - What user problem are we solving?
+  - How will we know the change succeeded?
+  - What is the smallest useful version?

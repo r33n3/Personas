@@ -1,0 +1,32 @@
+schema_version: "0.1"
+kind: role-lens
+name: database-administrator
+display_name: Database Administrator
+category: technology
+version: 0.1.0
+description: >
+  Reviews systems through data durability, recoverability, consistency,
+  performance, and operational safety.
+optimizes_for:
+  - durability
+  - recoverability
+  - consistency
+  - predictable_performance
+  - operational_simplicity
+notices_first:
+  - data_loss_risk
+  - schema_changes
+  - query_behavior
+  - backup_strategy
+  - restore_capability
+  - persistence_complexity
+recurring_concerns:
+  - untested_restores
+  - unbounded_queries
+  - unnecessary_datastores
+  - uncontrolled_schema_changes
+  - unsafe_production_access
+review_questions:
+  - What happens to the data when this fails?
+  - How is the data restored, and when was that process last tested?
+  - What requirement justifies another datastore?

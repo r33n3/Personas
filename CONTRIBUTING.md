@@ -6,7 +6,7 @@ Contributions should preserve the joke and improve the engineering.
 
 A persona contribution must include `SKILL.md`, `persona.yaml`, and `examples.md`. It must have:
 
-- a unique, repeatable behavioral identity;
+- a unique, repeatable persona character;
 - an existing behavioral profile or a well-justified new one;
 - clear presentation characteristics;
 - provider-neutral voice metadata with distinct sound and delivery guidance;
@@ -27,7 +27,37 @@ Voice-capable personas must keep `persona.yaml` and the `## Voice Performance` s
 
 Optional `experience` metadata describes consumer presentation intent, not agent instructions. Use only the declarative fields in `schemas/experience.schema.json`; do not add URLs, code, CSS, HTML, scripts, provider identifiers, or executable assets. Consumers may ignore any supported section, and accessibility settings take precedence. A persona does not need an experience block to conform.
 
+Persona applications contain only an optional `role_lens`, persona `type`, conversational `name`, and optional `experience` overrides. Names must remain single-line user labels and must never be described as identifiers, authentication, provenance, authority, or permission. A Role Lens is a review perspective, not a functional role. Do not add agent jobs, tools, models, credentials, memory, routing, or deployment settings to the application schema.
+
+## Role Lenses
+
+Add a Role Lens only when it contributes a distinct attention pattern: what it optimizes for, notices first, and repeatedly considers. Reusable reactions and challenge actions belong in behavioral profiles. Character, humor, and social delivery belong in personas.
+
+Role Lens definitions must:
+
+- remain provider-neutral and usable without a runtime;
+- describe attention rather than authority;
+- use review questions only as relevant considerations, never a mandatory script;
+- avoid tools, permissions, access claims, credentials, models, memory, and deployment configuration;
+- include `role.yaml` and at least two non-normative examples using shared scenarios where practical.
+
+Absence of a lens is neutral. Do not add an empty generalist lens merely to fill a selector.
+
 Personas declaring `convictions`, `pushback`, or `uncertainty` must include matching `## Convictions`, `## Pushback`, or `## Uncertainty` guidance in `SKILL.md`. Convictions must be stable values rather than restated preferences. Pushback must name observable actions and target work or reasoning, never the user. Uncertainty rules must preserve evidence boundaries and prohibit fabrication.
+
+## Profiles, personas, and variants
+
+Before adding another catalogue entry, use this decision sequence:
+
+1. If the contribution introduces reusable problem-solving behavior, create or update a behavioral profile.
+2. If it creates a recognizably different character even while performing the same work, create a persona.
+3. If the same character is merely specialized for a domain, create a constrained variant.
+
+New persona proposals should answer: “What makes this persona recognizably different from existing personas even when performing the same work?” Optional `persona_signature` metadata provides that answer in two to five concise statements. `persona_family` organizes related characters but never creates inheritance.
+
+Variants may use only fields allowed by `schemas/persona-variant.schema.json`. They cannot change family, signature, convictions, invariants, pushback, uncertainty, prohibited behavior, or anything about the underlying agent. The base persona is already the Classic selection; do not add an empty classic variant.
+
+Run `python tools/check_persona_similarity.py --threshold 0.80` before proposing a similar persona. Findings are advisory and show behavioral overlap separately from persona-character overlap. High shared behavior with distinct character usually suggests a shared profile, while high overlap on both axes suggests a duplicate or variant.
 
 ## Archetype proposals
 
@@ -46,6 +76,8 @@ When a schema changes, update `SPEC.md`, fixtures, every affected definition, an
 ```console
 python tools/validate_persona.py
 python tools/validate_dialogues.py
+python tools/build_prompt.py personas/professional/persona.yaml --role-lens ciso
+python tools/check_persona_similarity.py --threshold 0.80
 python -m unittest discover -s tests -v
 ```
 

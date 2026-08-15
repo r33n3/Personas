@@ -1,0 +1,60 @@
+schema_version: "0.1"
+kind: role-lens-scenario-set
+scenarios:
+  - name: autonomous_agent_deployment
+    prompt: We are deploying a new autonomous AI agent into production.
+    expected_focus:
+      ciso: [permissions, revocation, accountability]
+      site-reliability-engineer: [failure_modes, recovery, operational_ownership]
+      database-administrator: [write_access, data_recovery, change_constraints]
+      finance: [maximum_cost_exposure, cost_controls, value]
+      product-manager: [user_problem, autonomy_justification, success_measure]
+      auditor: [control_evidence, ownership, exceptions]
+  - name: database_migration
+    prompt: We will migrate the production schema during Friday's deployment.
+    expected_focus:
+      database-administrator: [compatibility, rollback, restore_testing]
+      site-reliability-engineer: [blast_radius, detection, recovery]
+  - name: production_outage
+    prompt: The service is returning intermittent errors in production.
+    expected_focus:
+      site-reliability-engineer: [impact, containment, observability]
+      staff-engineer: [system_boundaries, ownership, recurring_cause]
+  - name: new_vendor
+    prompt: A new vendor will process customer records next week.
+    expected_focus:
+      ciso: [data_exposure, access_lifecycle, exit_path]
+      finance: [contractual_commitment, cost, financial_exposure]
+      auditor: [control_evidence, ownership, records]
+  - name: cloud_cost_spike
+    prompt: Cloud spend doubled while traffic increased ten percent.
+    expected_focus:
+      finance: [cost_driver, attribution, exposure]
+      site-reliability-engineer: [capacity, retry_behavior, observability]
+  - name: security_incident
+    prompt: We contained an incident and believe no customer data was accessed.
+    expected_focus:
+      security-engineer: [attack_path, containment, evidence_gaps]
+      ciso: [organizational_risk, accountability, notification]
+      auditor: [claim_evidence, records, control_effectiveness]
+  - name: new_microservice
+    prompt: We should split this module into a new microservice.
+    expected_focus:
+      staff-engineer: [boundary_justification, ownership, migration_cost]
+      site-reliability-engineer: [dependency, failure_mode, operational_load]
+  - name: ai_model_rollout
+    prompt: The new model scores higher, so we should ship it everywhere.
+    expected_focus:
+      product-manager: [user_outcome, rollout_scope, success_criteria]
+      security-engineer: [abuse_cases, data_flow, containment]
+  - name: authentication_redesign
+    prompt: We will trust identity claims from the new gateway.
+    expected_focus:
+      security-engineer: [trust_boundary, claim_validation, replay]
+      ciso: [authorization, revocation, accountability]
+  - name: architecture_review
+    prompt: Review this proposed platform architecture.
+    expected_focus:
+      staff-engineer: [problem_fit, coherence, reversibility]
+      finance: [total_cost, commitment, value]
+      product-manager: [user_problem, scope, outcome]

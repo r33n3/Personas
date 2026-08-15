@@ -2,13 +2,13 @@
 
 ## 1. Scope
 
-Agent Attitudes defines portable behavioral profiles, low-precedence persona behavior, and optional presentation and consumer-experience metadata for AI agents. It does not define models, capabilities, tool permissions, retrieval, task planning, or a runtime.
+Agent Attitudes defines optional Role Lenses, portable behavioral profiles, low-precedence persona behavior, and presentation and consumer-experience metadata for AI agents. It does not define functional roles, models, capabilities, tool permissions, retrieval, task planning, or a runtime.
 
 The keywords **MUST**, **MUST NOT**, **SHOULD**, and **MAY** are normative.
 
 ## 2. Separation of concerns
 
-A **behavioral profile** defines reusable observable responses to situations. A **persona** may add stable convictions, persona-specific pushback, and uncertainty handling, then defines how all applicable behavior is presented. “Challenge unnecessary complexity, explain its cost, and offer a simpler option” is behavior. Dry sarcasm is presentation.
+A **Role Lens** defines what receives attention first because of a recognizable professional perspective. A **behavioral profile** defines reusable observable responses to situations. A **persona** may add stable convictions, persona-specific pushback, and uncertainty handling, then defines how all applicable behavior is presented. “Notice production write access” is perspective. “Challenge excessive access and propose least privilege” is behavior. Dry sarcasm is presentation.
 
 Consumers MUST preserve this boundary. Presentation MUST NOT weaken factual or technical accuracy, safety, task completion, tool restrictions, or higher-precedence instructions.
 
@@ -21,19 +21,20 @@ From strongest to weakest, the recommended precedence is:
 1. Safety, platform, and harness requirements
 2. The user's task and explicit constraints
 3. Repository and organizational requirements
-4. Behavioral profiles
-5. Persona behavior
-6. Persona presentation
-7. Consumer experience
+4. Role Lens
+5. Behavioral profiles
+6. Persona behavior
+7. Persona presentation
+8. Consumer experience
 
 Lower layers MUST yield on conflict. An implementation MUST NOT use a persona to acquire permissions, bypass controls, reinterpret a safety restriction, or conceal non-compliance. An explicit user request to disable or replace a persona SHOULD be honored unless a higher layer requires it.
 
-## 4. Documents and identity
+## 4. Documents and identifiers
 
 Persona and profile documents are UTF-8 YAML mappings. Each document has:
 
 - `schema_version`: format version; persona documents currently use `0.2` and behavioral profiles remain at `0.1`;
-- `kind`: `persona` or `behavioral-profile`;
+- `kind`: the applicable schema discriminator, including `role-lens`, `behavioral-profile`, `persona`, `persona-variant`, or `persona-application`;
 - `name`: stable lowercase kebab-case identifier;
 - `category`: a library classification; it does not affect behavior or precedence;
 - `version`: semantic version of the definition;
@@ -55,7 +56,15 @@ Rules without `when` apply generally. Actions describe outcomes rather than pers
 
 Profiles also declare `invariants`. The four core invariants—`technical_accuracy`, `factual_accuracy`, `task_completion`, and `safety`—are required and have the value `required`.
 
-## 6. Personas
+## 6. Role Lens
+
+A Role Lens is an optional review perspective. Its `optimizes_for` identifiers describe priorities, `notices_first` describes attention order, and optional `recurring_concerns` describes repeatedly relevant risks or tradeoffs. Human-readable `review_questions` are considerations, not a script: consumers SHOULD use them only when relevant and MUST NOT recite them mechanically or let them displace the user's task.
+
+Role Lens is not the underlying agent's functional role, job title, authenticated standing, capability, or authority. It MAY influence attention, prioritization, review questions, risk emphasis, and tradeoff analysis. It MUST NOT influence tools, permissions, authentication, authorization, credentials, secrets, models, memory, repository access, safety policy, factual truth, or claims of access to unavailable information.
+
+Reference definitions conform to `schemas/role-lens.schema.json` and live at `roles/<name>/role.yaml`. The absence of a Role Lens is the neutral condition. Consumers that do not support Role Lens MAY ignore it without changing persona conformance.
+
+## 7. Personas
 
 `extends` is an ordered list of behavioral-profile names. Each name MUST resolve to exactly one available profile. Cycles are impossible in 0.1 because profiles do not inherit.
 
@@ -63,17 +72,36 @@ Profiles also declare `invariants`. The four core invariants—`technical_accura
 
 A portable `SKILL.md` SHOULD accompany each persona. Its human-readable instructions MUST remain consistent with the structured definition. Examples are non-normative.
 
-## 7. Behavioral depth
+### 7.1 Catalog metadata
+
+A persona MAY declare `persona_family` and `persona_signature`. Both are organizational metadata and MUST NOT alter prompts, behavior, inheritance, precedence, permissions, or experience resolution.
+
+`persona_family` is a stable identifier grouping recognizably related persona types without implying inheritance. `persona_signature` contains two to five concise statements explaining what makes the persona character distinct from similar entries. Signatures SHOULD describe recognizable framing, delivery, and character mechanics rather than repeat behavioral profiles.
+
+### 7.2 Persona variants
+
+A persona MAY provide constrained variants under `personas/<type>/variants/<name>.yaml`. A variant uses `kind: persona-variant`, names its base `persona`, and conforms to `schemas/persona-variant.schema.json`. The base persona is the implicit Classic selection; no `classic` variant file is required.
+
+Variants MAY add behavioral profiles, preferences, and new triggers. They MAY adjust presentation, advisory voice, and experience metadata. Resolution is deterministic:
+
+- `additional_profiles` append in order and exact duplicates are removed;
+- preferences and voice mannerisms append uniquely;
+- named presentation, voice-trait, voice-context, and experience leaves override their base values;
+- new triggers append, while an attempt to replace an existing trigger is an error.
+
+Variants cannot access or redefine invariants, convictions, pushback, uncertainty, prohibited behavior, family, signature, category, package name, or any property of the underlying agent. A variant conflict MUST fail rather than silently weaken its base persona.
+
+## 8. Behavioral depth
 
 Personas MAY define three optional behavioral-depth properties. They supplement inherited profiles; they do not cancel or weaken profile requirements.
 
-### 7.1 Convictions
+### 8.1 Convictions
 
 `convictions` is a non-empty, unique list of stable behavioral identifiers. A conviction states a value the persona applies consistently across relevant contexts. It is stronger than a preference: preferences guide favored approaches, while convictions establish a burden of reasoning such as `complexity_requires_justification`.
 
 Convictions MUST NOT override facts, evidence, safety, user constraints, repository policy, or competence invariants. They are not permissions.
 
-### 7.2 Pushback
+### 8.2 Pushback
 
 `pushback` maps observable trigger identifiers to a rule containing:
 
@@ -84,7 +112,7 @@ Convictions MUST NOT override facts, evidence, safety, user constraints, reposit
 
 Pushback MUST address the design, claim, assumption, or action rather than demean the user. `absolute` does not grant authority; it describes the firmness with which an existing boundary is communicated.
 
-### 7.3 Uncertainty
+### 8.3 Uncertainty
 
 `uncertainty` defines epistemic behavior through:
 
@@ -98,7 +126,7 @@ These values alter handling and expression, not the factual standard. A persona 
 
 Bundled personas declaring any behavioral-depth property MUST include the corresponding `Convictions`, `Pushback`, or `Uncertainty` section in `SKILL.md`.
 
-## 8. Voice presentation
+## 9. Voice presentation
 
 Personas MAY define an advisory `voice` object. Voice metadata describes how a persona may be performed by a voice-capable consumer and does not require speech synthesis. It has four independent parts:
 
@@ -115,9 +143,9 @@ Context rules SHOULD reduce humor, sarcasm, theatricality, or narrative intensit
 
 Voice descriptions MUST be provider-neutral. They SHOULD describe acoustic and performance characteristics and MUST NOT request imitation of a named real person, celebrity, copyrighted character, or protected performance. Provider identifiers and proprietary voice selections do not belong in persona definitions.
 
-Provider adapters may eventually translate portable voice metadata into vendor-specific controls, but adapters are outside this specification. Future conformance research may evaluate perceived identity, pace, energy, context modulation, and intelligibility; version 0.2 defines no voice scoring system.
+Provider adapters may eventually translate portable voice metadata into vendor-specific controls, but adapters are outside this specification. Future conformance research may evaluate persona recognition, pace, energy, context modulation, and intelligibility; version 0.2 defines no voice scoring system.
 
-### 8.1 Version compatibility
+### 9.1 Version compatibility
 
 Adding `voice`, `experience`, and optional behavioral-depth properties is semantically additive for tolerant consumers, but the 0.1 persona schema rejected unknown top-level properties. Persona documents using 0.2-only properties therefore declare `schema_version: '0.2'` and definition `version: 0.2.0`. This is an explicit compatibility boundary rather than a silent change to 0.1.
 
@@ -125,7 +153,9 @@ Behavioral-profile documents remain at schema version 0.1 because their format d
 
 The `experience` addition does not require a further schema-version bump: it is optional within the existing pre-1.0 persona 0.2 line, and every experience-free 0.2 definition remains valid without modification. Consumers using an earlier strict copy of the 0.2 schema will reject an experience-bearing definition rather than misinterpret it. The reference validator and schema are authoritative for the current 0.2 revision.
 
-## 9. Consumer experience
+Optional family and signature metadata follow the same 0.2 compatibility rule. Persona applications and variants are new document kinds with separate schemas; they do not change or invalidate existing persona packages.
+
+## 10. Consumer experience
 
 Personas MAY define an `experience` object containing optional `visual`, `terminal`, `avatar`, `motion`, `audio`, and `notifications` sections. Experience metadata describes presentation intent for compatible consumers; it is data, not an instruction to the agent or language model.
 
@@ -139,32 +169,59 @@ Consumers MUST treat experience metadata as untrusted declarative data and MUST 
 
 The reference instruction builder ignores `experience` by default. Visual properties such as colors, terminal styling, or motion MUST NOT be converted into behavioral prompt instructions. Voice-capable consumers may separately use the established advisory `voice` metadata or the narrower `experience.audio` hints; neither source changes authority or competence requirements.
 
-## 10. Composition and conflict resolution
+## 11. Persona applications
 
-Version 0.2 supports zero or more profiles plus one primary persona:
+A `persona-application` document applies one reusable persona type to a conversation or an agent that already exists. It is a small customization document, not an agent manifest or runtime configuration.
 
 ```yaml
+schema_version: "0.2"
+kind: persona-application
+role_lens: ciso
+persona:
+  type: greybeard
+  variant: security
+  name: Carl
+experience:
+  visual:
+    accent: amber
+```
+
+Optional `role_lens` MUST resolve to one available Role Lens. `persona.type` MUST resolve to one available persona definition. Optional `persona.variant` MUST resolve beneath that persona type. `persona.name` is an optional, user-selected conversational name. It MAY influence introductions and direct address, but MUST NOT be treated as a unique identifier, authenticated name, authorization signal, provenance claim, or permission source. Omitting it leaves the reusable persona's normal display name unchanged.
+
+The optional application-level `experience` object uses `schemas/experience.schema.json` and contains consumer overrides. A consumer resolves experience from weakest to strongest: its defaults, the base persona, the application, harness restrictions, and explicit accessibility or user-interface preferences. Consumers MAY ignore the entire object.
+
+Persona applications MUST NOT contain agent identifiers, functional roles, tools, models, permissions, credentials, memory, task routing, or deployment configuration. The optional `role_lens` is a bounded perspective reference, not a functional role. Operational concerns belong to the system that already operates the agent.
+
+The prompt builder MAY include the conversational name as presentation guidance and MUST include resolved variant behavioral additions. It MUST exclude application and variant experience metadata from behavioral instructions. Two applications using the same persona type and variant with different names therefore retain equivalent behavior.
+
+## 12. Composition and conflict resolution
+
+Version 0.2 supports one optional Role Lens, zero or more profiles, one primary persona, and an optional constrained variant:
+
+```yaml
+role_lens: ciso
 behavior:
   - skeptical-engineer
   - quality-focused-reviewer
 persona:
   primary: greybeard
+  variant: security
 ```
 
-The persona's `extends` profiles are loaded first in listed order. Explicit additional profiles follow in caller order. Exact duplicate profile names are de-duplicated by first occurrence.
+The Role Lens is rendered before behavioral requirements so it can direct attention without changing their authority. The persona's `extends` profiles are loaded first in listed order. Variant profiles follow, then explicit caller profiles. Exact duplicate profile names are de-duplicated by first occurrence.
 
 Composition is additive. Later profiles cannot cancel earlier requirements, and persona presentation cannot cancel profile actions. If requirements genuinely conflict, the safer or higher-precedence interpretation wins; otherwise the consumer MUST report the conflict rather than silently choose. Core invariants are always included.
 
 Weighted persona blending is outside v0.2. Consumers MAY experiment with it but MUST NOT describe the result as conforming 0.2 composition.
 
-## 11. Resolution and portability
+## 13. Resolution and portability
 
 The reference layout stores profiles as `profiles/<name>.yaml`. A consumer MAY use registries or other locations, but resolution MUST be deterministic and missing or ambiguous references MUST be errors.
 
 The YAML files and `SKILL.md` documents are usable without the reference Python tools. Tools MUST treat input as data, never execute content from a definition, and SHOULD provide nonzero exit codes and actionable diagnostics on invalid input.
 
-## 12. Conformance
+## 14. Conformance
 
-A definition conforms when it validates against its JSON Schema, all inherited profiles resolve and validate, and all core invariants are present. Absence of `experience` does not affect conformance. A reference persona package additionally contains `SKILL.md`, `persona.yaml`, at least three example interactions, human-readable guidance corresponding to declared behavioral-depth properties, and `Voice Performance` guidance when structured voice metadata is present.
+A definition conforms when it validates against its JSON Schema, all inherited profiles, persona-type, variant, and Role Lens references resolve, and all applicable core invariants are present. Absence of a Role Lens, `experience`, or persona application does not affect persona conformance. A reference Role Lens package contains `role.yaml` and non-normative `examples.md`. A reference persona package additionally contains `SKILL.md`, `persona.yaml`, at least three example interactions, human-readable guidance corresponding to declared behavioral-depth properties, and `Voice Performance` guidance when structured voice metadata is present.
 
 Conformance does not prove that a model will follow the persona. Behavioral evaluation requires scenario-based testing of task preservation, accuracy, trigger activation, boundaries, differentiation, inheritance, composition, and precedence.

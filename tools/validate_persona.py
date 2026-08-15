@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Agent Attitudes persona and behavioral-profile definitions."""
+"""Validate Agent Attitudes personas, profiles, and persona applications."""
 
 from __future__ import annotations
 
@@ -13,9 +13,12 @@ try:
         discover_definitions,
         load_yaml,
         package_errors,
+        persona_index,
         profile_index,
         reference_errors,
+        role_lens_index,
         schema_errors,
+        variant_index,
     )
 except RuntimeError as exc:
     print(f"error: {exc}", file=sys.stderr)
@@ -24,7 +27,7 @@ except RuntimeError as exc:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Validate persona/profile YAML and inherited profile references."
+        description="Validate persona, profile, Role Lens, and application YAML plus references."
     )
     parser.add_argument(
         "paths",
@@ -43,6 +46,12 @@ def main() -> int:
         return 2
 
     profiles, errors = profile_index()
+    personas, persona_errors = persona_index()
+    errors.extend(persona_errors)
+    variants, variant_errors = variant_index()
+    errors.extend(variant_errors)
+    role_lenses, role_errors = role_lens_index()
+    errors.extend(role_errors)
     for path in paths:
         if not path.exists():
             errors.append(f"{path}: path does not exist")
@@ -53,14 +62,20 @@ def main() -> int:
             errors.append(str(exc))
             continue
         errors.extend(schema_errors(document, path))
-        errors.extend(reference_errors(document, path, profiles))
+        errors.extend(reference_errors(document, path, profiles, personas, variants, role_lenses))
         errors.extend(package_errors(document, path))
 
-        expected_name = path.parent.name if path.name == "persona.yaml" else path.stem
-        if document.get("name") != expected_name:
+        expected_name = path.parent.name if path.name in {"persona.yaml", "role.yaml"} else path.stem
+        if document.get("kind") != "persona-application" and document.get("name") != expected_name:
             errors.append(
-                f"{path}:name: {document.get('name')!r} does not match path identity {expected_name!r}"
+                f"{path}:name: {document.get('name')!r} does not match path identifier {expected_name!r}"
             )
+        if document.get("kind") == "persona-variant":
+            expected_persona = path.parent.parent.name
+            if document.get("persona") != expected_persona:
+                errors.append(
+                    f"{path}:persona: {document.get('persona')!r} does not match containing persona {expected_persona!r}"
+                )
 
     if errors:
         for error in errors:

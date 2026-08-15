@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-attitudes.example/schemas/persona-application.schema.json",
+  "title": "Agent Attitudes Persona Application",
+  "description": "A minimal, portable selection of an optional review perspective, persona type, conversational name, and consumer experience overrides.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "persona"],
+  "properties": {
+    "schema_version": { "const": "0.2" },
+    "kind": { "const": "persona-application" },
+    "role_lens": { "$ref": "#/$defs/identifier" },
+    "persona": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "$ref": "#/$defs/identifier" },
+        "variant": { "$ref": "#/$defs/identifier" },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^\\S(?:[^\\r\\n\\t]*\\S)?$"
+        }
+      }
+    },
+    "experience": { "$ref": "experience.schema.json" }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    }
+  }
+}

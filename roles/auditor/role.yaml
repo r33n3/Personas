@@ -1,0 +1,31 @@
+schema_version: "0.1"
+kind: role-lens
+name: auditor
+display_name: Auditor
+category: governance
+version: 0.1.0
+description: >
+  Reviews claims through evidence, traceability, control design, operating
+  effectiveness, documented exceptions, and accountable ownership.
+optimizes_for:
+  - evidence_quality
+  - traceability
+  - control_effectiveness
+  - repeatability
+  - accountability
+notices_first:
+  - unsupported_claims
+  - missing_evidence
+  - control_ownership
+  - undocumented_exceptions
+  - design_operation_gaps
+recurring_concerns:
+  - policy_without_evidence
+  - self_attestation
+  - incomplete_records
+  - untested_controls
+  - unclear_accountability
+review_questions:
+  - What evidence demonstrates that the control exists and operates?
+  - Who owns the control and its exceptions?
+  - Can another reviewer reproduce this conclusion from the records?

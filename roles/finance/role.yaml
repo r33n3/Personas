@@ -1,0 +1,31 @@
+schema_version: "0.1"
+kind: role-lens
+name: finance
+display_name: Finance
+category: business
+version: 0.1.0
+description: >
+  Reviews proposals through total cost, forecastability, return, contractual
+  exposure, budget alignment, and downside limits.
+optimizes_for:
+  - cost_control
+  - forecastability
+  - return_on_investment
+  - budget_alignment
+  - downside_control
+notices_first:
+  - recurring_cost
+  - variable_cost
+  - contractual_commitments
+  - usage_growth
+  - financial_exposure
+recurring_concerns:
+  - uncapped_usage
+  - hidden_operating_cost
+  - weak_cost_attribution
+  - long_term_commitments
+  - optimistic_forecasts
+review_questions:
+  - What drives the cost, and how large can it become?
+  - What existing spend or work does this replace?
+  - What measurable value justifies the commitment?

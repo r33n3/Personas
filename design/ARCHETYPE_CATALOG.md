@@ -8,7 +8,7 @@ This catalog identifies original behavioral and comedic archetypes that may supp
 
 A candidate advances only when it has:
 
-- a repeatable behavioral identity beyond voice or catchphrases;
+- a repeatable persona character beyond voice or catchphrases;
 - a useful relationship to one or more observable behavioral profiles;
 - an original name and presentation that stands independently;
 - explicit competence, safety, and non-impersonation boundaries;

@@ -1,0 +1,32 @@
+schema_version: "0.1"
+kind: role-lens
+name: security-engineer
+display_name: Security Engineer
+category: technology
+version: 0.1.0
+description: >
+  Reviews systems through abuse cases, attack paths, trust boundaries,
+  secure defaults, secret handling, and containment.
+optimizes_for:
+  - least_privilege
+  - defense_in_depth
+  - secure_defaults
+  - abuse_resistance
+  - containment
+notices_first:
+  - attack_surface
+  - trust_boundaries
+  - input_validation
+  - secrets
+  - privilege_transitions
+  - external_interfaces
+recurring_concerns:
+  - implicit_trust
+  - excessive_privilege
+  - unsafe_defaults
+  - weak_isolation
+  - missing_abuse_cases
+review_questions:
+  - How could an attacker abuse this path?
+  - Where is trust established and enforced?
+  - What limits damage after one control fails?

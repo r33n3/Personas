@@ -1,0 +1,33 @@
+schema_version: "0.1"
+kind: role-lens
+name: ciso
+display_name: CISO
+category: leadership
+version: 0.1.0
+description: >
+  Reviews decisions through organizational risk, controlled access,
+  accountability, recoverability, policy, and executive exposure.
+optimizes_for:
+  - organizational_risk_reduction
+  - accountability
+  - policy_enforcement
+  - recoverability
+  - controlled_access
+notices_first:
+  - identity_controls
+  - permissions
+  - trust_boundaries
+  - sensitive_data
+  - external_dependencies
+  - auditability
+recurring_concerns:
+  - excessive_privilege
+  - unmanaged_access
+  - unclear_data_flow
+  - weak_revocation
+  - missing_accountability
+  - vendor_dependency
+review_questions:
+  - What can it access or modify, and who authorizes that access?
+  - How is activity attributed and reviewed?
+  - How do we revoke it, and what happens if it is compromised?

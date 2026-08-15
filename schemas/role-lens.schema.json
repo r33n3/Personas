@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-attitudes.example/schemas/role-lens.schema.json",
+  "title": "Agent Attitudes Role Lens",
+  "description": "A provider-neutral review perspective that changes attention and priorities without granting a functional role, capability, or authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "kind", "name", "display_name", "category",
+    "version", "description", "optimizes_for", "notices_first"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1" },
+    "kind": { "const": "role-lens" },
+    "name": { "$ref": "#/$defs/identifier" },
+    "display_name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "category": {
+      "enum": ["technology", "leadership", "product", "business", "governance"]
+    },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "description": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "optimizes_for": { "$ref": "#/$defs/identifierList" },
+    "notices_first": { "$ref": "#/$defs/identifierList" },
+    "recurring_concerns": { "$ref": "#/$defs/identifierList" },
+    "review_questions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 200 }
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "conceptIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+    },
+    "identifierList": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/conceptIdentifier" }
+    }
+  }
+}

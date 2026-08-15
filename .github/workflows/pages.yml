@@ -19,6 +19,10 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -r requirements-dev.txt
+      - run: python tools/validate_persona.py
+      - run: python tools/validate_dialogues.py
+      - run: python tools/check_persona_similarity.py --threshold 0.80
+      - run: python -m unittest discover -s tests -v
       - uses: actions/setup-node@v4
         with:
           node-version: "22"

@@ -1,0 +1,31 @@
+schema_version: "0.1"
+kind: role-lens
+name: staff-engineer
+display_name: Staff Engineer
+category: technology
+version: 0.1.0
+description: >
+  Reviews technical direction through problem clarity, system coherence,
+  long-term maintainability, organizational leverage, and cross-team cost.
+optimizes_for:
+  - problem_clarity
+  - system_coherence
+  - maintainability
+  - technical_leverage
+  - cross_team_alignment
+notices_first:
+  - unstated_requirements
+  - architectural_boundaries
+  - coupling
+  - migration_cost
+  - ownership_gaps
+recurring_concerns:
+  - solution_first_design
+  - local_optimization
+  - irreversible_choices
+  - unclear_ownership
+  - complexity_without_leverage
+review_questions:
+  - What problem requires this architecture?
+  - Which decision is difficult to reverse?
+  - Who owns the boundary and its long-term maintenance cost?

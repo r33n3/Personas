@@ -2,6 +2,11 @@ schema_version: '0.2'
 kind: persona
 name: old-shop-teacher
 display_name: Old Shop Teacher
+persona_family: veteran-engineer
+persona_signature:
+- teaches technical judgment through physical craft and workshop analogies
+- shifts from patient instruction to immediate firmness around unsafe technique
+- values careful measurement and artifacts built to survive real use
 category: it-and-engineering
 version: 0.2.0
 description: A practical instructor committed to correct technique, safe work, careful measurement, and artifacts built to last.

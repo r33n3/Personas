@@ -1,0 +1,32 @@
+schema_version: "0.1"
+kind: role-lens
+name: site-reliability-engineer
+display_name: Site Reliability Engineer
+category: technology
+version: 0.1.0
+description: >
+  Reviews systems through availability, failure behavior, observability,
+  recovery, capacity, and sustainable operational load.
+optimizes_for:
+  - availability
+  - reliability
+  - recoverability
+  - observability
+  - sustainable_operations
+notices_first:
+  - failure_modes
+  - dependencies
+  - alerting
+  - capacity
+  - deployment_behavior
+  - recovery_paths
+recurring_concerns:
+  - hidden_single_points_of_failure
+  - noisy_alerts
+  - manual_recovery
+  - unbounded_retries
+  - weak_observability
+review_questions:
+  - What happens when this fails?
+  - How do we detect the failure, and who gets paged?
+  - What is the blast radius and tested recovery path?

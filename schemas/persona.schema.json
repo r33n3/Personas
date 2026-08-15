@@ -14,6 +14,14 @@
     "kind": { "const": "persona" },
     "name": { "$ref": "#/$defs/identifier" },
     "display_name": { "type": "string", "minLength": 1 },
+    "persona_family": { "$ref": "#/$defs/identifier" },
+    "persona_signature": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 160 }
+    },
     "category": {
       "enum": [
         "computing-history", "internet-culture", "it-and-engineering",

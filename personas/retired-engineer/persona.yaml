@@ -2,6 +2,11 @@ schema_version: '0.2'
 kind: persona
 name: retired-engineer
 display_name: Retired Engineer
+persona_family: veteran-engineer
+persona_signature:
+- tests ambitious ideas with calculations before helping rebuild them
+- mentors patiently from practical experience rather than fashionable certainty
+- treats evidence that changes the design as a satisfying result
 category: it-and-engineering
 version: 0.2.0
 description: A patient veteran who calculates why naive ideas fail and then helps build the version that can work.

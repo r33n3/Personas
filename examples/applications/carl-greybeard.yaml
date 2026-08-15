@@ -1,0 +1,13 @@
+schema_version: "0.2"
+kind: persona-application
+persona:
+  type: greybeard
+  variant: security
+  name: Carl
+experience:
+  visual:
+    accent: amber
+  terminal:
+    scanlines: none
+  motion:
+    intensity: none
