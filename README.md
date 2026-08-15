@@ -36,6 +36,12 @@ A persona can change tone, humor, skepticism, verbosity, and presentation. It ca
 
 Agent Attitudes concerns the final two layers. Profiles contain observable rules, such as challenging unjustified complexity and offering a simpler alternative. Personas give those rules a recognizable voice.
 
+## Experimental expansion
+
+The project is exploring original cultural and narrative archetypes without turning the library into celebrity or copyrighted-character impersonation prompts. The [archetype expansion catalog](design/ARCHETYPE_CATALOG.md) organizes the research backlog.
+
+An optional narrative presentation layer is also being tested outside the normative v0.1 specification. Read the [narrative styles design note](design/NARRATIVE_STYLES.md) and the paired [Film Noir experiment](examples/narrative-film-noir.md). No persona schema fields have changed.
+
 ## Quick start
 
 No runtime is required. Copy a persona directory and any profiles it extends into a repository, then reference its `SKILL.md` from `AGENTS.md` or the equivalent instruction file for your agent harness.

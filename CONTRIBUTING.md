@@ -17,7 +17,13 @@ A persona contribution must include `SKILL.md`, `persona.yaml`, and `examples.md
 
 Set `category` to one of the values allowed by the persona schema. Categories organize discovery only; they do not imply behavior or instruction priority.
 
-Do not contribute a persona that is merely “be sarcastic,” depends on impersonating a copyrighted fictional character, targets a protected class, uses personal abuse as its main joke, or intentionally makes answers less correct or complete.
+Do not contribute a persona that is merely “be sarcastic,” depends on impersonating a copyrighted fictional character or living individual, targets a protected class, uses personal abuse as its main joke, or intentionally makes answers less correct or complete.
+
+## Archetype proposals
+
+Check the [archetype expansion catalog](design/ARCHETYPE_CATALOG.md) before proposing a new persona. A proposal should identify the underlying behavioral mechanics, the reusable behavioral profile it needs, how it differs from existing personas, and how it avoids direct impersonation.
+
+Narrative styles are experimental and non-normative. Add design notes, paired control/styled examples, and preservation scenarios under `tests/experimental/`; do not add a `narrative_style` field to persona YAML or change the schemas without first satisfying the graduation criteria in [the narrative styles design](design/NARRATIVE_STYLES.md).
 
 ## Design changes
 

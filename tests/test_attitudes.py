@@ -169,6 +169,39 @@ class ScenarioTests(unittest.TestCase):
                 self.assertIn("professional", scenario["persona_expectations"])
 
 
+class ExperimentalDesignTests(unittest.TestCase):
+    def test_narrative_style_scenarios_have_preservation_contracts(self) -> None:
+        path = ROOT / "tests" / "experimental" / "narrative_style_scenarios.yaml"
+        experiment = yaml.safe_load(path.read_text(encoding="utf-8"))
+        self.assertFalse(experiment["normative"])
+        self.assertIn("film-noir", experiment["styles"])
+        self.assertGreaterEqual(len(experiment["scenarios"]), 8)
+
+        names = set()
+        for scenario in experiment["scenarios"]:
+            with self.subTest(scenario=scenario["name"]):
+                self.assertNotIn(scenario["name"], names)
+                names.add(scenario["name"])
+                self.assertTrue(scenario["prompt"].strip())
+                self.assertTrue(scenario["expectations"]["preserve"])
+
+    def test_archetype_boundary_scenarios_are_non_normative(self) -> None:
+        path = ROOT / "tests" / "experimental" / "archetype_boundaries.yaml"
+        experiment = yaml.safe_load(path.read_text(encoding="utf-8"))
+        self.assertFalse(experiment["normative"])
+        self.assertGreaterEqual(len(experiment["scenarios"]), 5)
+        for scenario in experiment["scenarios"]:
+            with self.subTest(scenario=scenario["name"]):
+                self.assertTrue(scenario["expected"])
+
+    def test_experiment_does_not_enter_normative_persona_documents(self) -> None:
+        for path in sorted((ROOT / "personas").glob("*/persona.yaml")):
+            with self.subTest(persona=path.parent.name):
+                persona = load_yaml(path)
+                self.assertNotIn("narrative_style", persona)
+                self.assertNotIn("experimental_composition", persona)
+
+
 class WebsiteCatalogTests(unittest.TestCase):
     def test_site_catalog_and_downloads_derive_from_all_personas(self) -> None:
         result = subprocess.run(
