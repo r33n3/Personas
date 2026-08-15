@@ -1,6 +1,6 @@
 # Persona catalog
 
-The library contains 50 humorous persona concepts plus Professional as a neutral control. Packages remain in a flat namespace so adoption paths stay stable; `category` in `persona.yaml` provides machine-readable grouping.
+The library contains 50 humorous persona concepts plus Professional as a neutral control. Every package includes provider-neutral advisory voice metadata and matching human-readable performance guidance. Packages remain in a flat namespace so adoption paths stay stable; `category` in `persona.yaml` provides machine-readable grouping.
 
 ## Computing History
 

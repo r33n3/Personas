@@ -12,6 +12,7 @@ try:
         AttitudeError,
         discover_definitions,
         load_yaml,
+        package_errors,
         profile_index,
         reference_errors,
         schema_errors,
@@ -53,6 +54,7 @@ def main() -> int:
             continue
         errors.extend(schema_errors(document, path))
         errors.extend(reference_errors(document, path, profiles))
+        errors.extend(package_errors(document, path))
 
         expected_name = path.parent.name if path.name == "persona.yaml" else path.stem
         if document.get("name") != expected_name:

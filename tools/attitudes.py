@@ -15,6 +15,7 @@ except ImportError as exc:  # pragma: no cover - exercised by CLI environments
 
 try:
     from jsonschema import Draft202012Validator
+    from referencing import Registry, Resource
 except ImportError as exc:  # pragma: no cover - exercised by CLI environments
     raise RuntimeError(
         "jsonschema is required for the reference tools; install requirements-dev.txt"
@@ -26,6 +27,7 @@ SCHEMA_PATHS = {
     "persona": ROOT / "schemas" / "persona.schema.json",
     "behavioral-profile": ROOT / "schemas" / "behavioral-profile.schema.json",
 }
+EXPERIENCE_SCHEMA_PATH = ROOT / "schemas" / "experience.schema.json"
 
 
 class AttitudeError(Exception):
@@ -59,7 +61,11 @@ def schema_errors(document: dict[str, Any], path: Path) -> list[str]:
     if kind not in SCHEMA_PATHS:
         return [f"{path}: kind must be 'persona' or 'behavioral-profile'"]
 
-    validator = Draft202012Validator(load_schema(kind))
+    experience_schema = json.loads(EXPERIENCE_SCHEMA_PATH.read_text(encoding="utf-8"))
+    registry = Registry().with_resource(
+        experience_schema["$id"], Resource.from_contents(experience_schema)
+    )
+    validator = Draft202012Validator(load_schema(kind), registry=registry)
     errors = []
     for error in sorted(validator.iter_errors(document), key=lambda item: list(item.path)):
         location = ".".join(str(part) for part in error.absolute_path) or "<root>"
@@ -110,6 +116,34 @@ def reference_errors(
         for name in document.get("extends", []):
             if name not in profiles:
                 errors.append(f"{path}:extends: profile {name!r} does not exist")
+    return errors
+
+
+def package_errors(document: dict[str, Any], path: Path) -> list[str]:
+    """Validate human-readable package guidance tied to structured metadata."""
+    if document.get("kind") != "persona":
+        return []
+    if path.name != "persona.yaml":
+        return []
+
+    skill_path = path.parent / "SKILL.md"
+    try:
+        skill = skill_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        return [f"{skill_path}: cannot read package guidance: {exc}"]
+    required_sections = {
+        "voice": "## Voice Performance",
+        "convictions": "## Convictions",
+        "pushback": "## Pushback",
+        "uncertainty": "## Uncertainty",
+    }
+    errors = []
+    for field, heading in required_sections.items():
+        if field in document and heading not in skill:
+            errors.append(
+                f"{skill_path}: personas declaring {field} metadata must include "
+                f"a {heading!r} section"
+            )
     return errors
 
 
@@ -166,9 +200,69 @@ def build_instruction(persona: dict[str, Any], profiles: list[dict[str, Any]]) -
             lines.append(f"- **{humanize(rule_name).title()}:** {condition}, {actions}.")
         lines.append("")
 
-    lines.extend(["## Presentation", ""])
+    convictions = persona.get("convictions")
+    if convictions:
+        lines.extend(["## Convictions", ""])
+        lines.extend(f"- {humanize(item).capitalize()}." for item in convictions)
+
+    pushback = persona.get("pushback")
+    if pushback:
+        lines.extend(["", "## Pushback", ""])
+        for trigger, rule in pushback.items():
+            actions = "; ".join(humanize(action) for action in rule["actions"])
+            lines.append(
+                f"- **{humanize(trigger).title()} ({rule['strength']}):** {actions}."
+            )
+
+    uncertainty = persona.get("uncertainty")
+    if uncertainty:
+        lines.extend(["", "## Uncertainty", ""])
+        lines.append(f"- Acknowledgment: {humanize(uncertainty['acknowledgment'])}.")
+        lines.append(f"- Speculation: {humanize(uncertainty['speculation'])}.")
+        lines.append(
+            f"- Confidence language: {humanize(uncertainty['confidence_language'])}."
+        )
+        lines.append(
+            "- When context is missing: "
+            + "; ".join(humanize(item) for item in uncertainty["missing_context"])
+            + "."
+        )
+        lines.append(
+            "- Never: "
+            + "; ".join(humanize(item) for item in uncertainty["never"])
+            + "."
+        )
+
+    lines.extend(["", "## Presentation", ""])
     for trait, value in persona["presentation"].items():
         lines.append(f"- {humanize(trait).title()}: {value}")
+
+    voice = persona.get("voice")
+    if voice:
+        lines.extend(
+            [
+                "",
+                "## Voice performance (advisory)",
+                "",
+                "Character affects performance; context controls intensity. Ignore this section when voice guidance is unsupported.",
+                "",
+            ]
+        )
+        for group_name in ("sound", "delivery"):
+            traits = voice.get(group_name, {})
+            if not traits:
+                continue
+            rendered = "; ".join(
+                f"{humanize(name)}: {humanize(value)}" for name, value in traits.items()
+            )
+            lines.append(f"- **{group_name.title()}:** {rendered}.")
+        if voice.get("mannerisms"):
+            lines.append("- **Mannerisms:** " + "; ".join(voice["mannerisms"]) + ".")
+        for context, settings in voice.get("context_rules", {}).items():
+            rendered = "; ".join(
+                f"{humanize(name)}: {humanize(value)}" for name, value in settings.items()
+            )
+            lines.append(f"- **When {humanize(context)}:** {rendered}.")
 
     lines.extend(["", "## Preferences", ""])
     lines.extend(f"- Prefer {preference}." for preference in persona["preferences"])

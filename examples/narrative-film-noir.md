@@ -1,6 +1,6 @@
 # Experimental Composition: Film Noir
 
-These paired examples demonstrate narrative style as removable framing. They do not introduce a v0.1 schema field.
+These paired examples demonstrate narrative style as removable framing. They do not introduce a v0.2 schema field.
 
 ## Professional + Film Noir
 

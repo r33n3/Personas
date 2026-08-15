@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-attitudes.example/schemas/experience.schema.json",
+  "title": "Agent Attitudes Experience",
+  "description": "Optional, declarative presentation preferences for compatible consumers.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "visual": { "$ref": "#/$defs/visual" },
+    "terminal": { "$ref": "#/$defs/terminal" },
+    "avatar": { "$ref": "#/$defs/avatar" },
+    "motion": { "$ref": "#/$defs/motion" },
+    "audio": { "$ref": "#/$defs/audio" },
+    "notifications": { "$ref": "#/$defs/notifications" }
+  },
+  "$defs": {
+    "semanticToken": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "visual": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "mode": { "enum": ["dark", "light", "system", "adaptive"] },
+        "accent": { "$ref": "#/$defs/semanticToken" },
+        "background": { "$ref": "#/$defs/semanticToken" },
+        "typography": { "$ref": "#/$defs/semanticToken" },
+        "density": { "enum": ["spacious", "normal", "compact"] },
+        "contrast": { "enum": ["soft", "normal", "high"] }
+      }
+    },
+    "terminal": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "style": { "enum": ["modern", "unix", "crt", "dos", "workstation", "minimal"] },
+        "prompt": { "enum": ["$", ">", "#", "%"] },
+        "scanlines": { "enum": ["none", "subtle", "medium"] },
+        "glow": { "enum": ["none", "low", "medium"] },
+        "cursor": { "enum": ["block", "beam", "underline"] }
+      }
+    },
+    "avatar": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "style": { "enum": ["none", "abstract", "geometric", "illustrated", "pixel-art", "silhouette", "technical-diagram"] },
+        "treatment": { "enum": ["monochrome", "muted", "vivid", "high-contrast"] },
+        "expression": { "$ref": "#/$defs/semanticToken" }
+      }
+    },
+    "motion": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "intensity": { "enum": ["none", "subtle", "moderate"] },
+        "transitions": { "enum": ["none", "restrained", "expressive"] }
+      }
+    },
+    "audio": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "voice_style": { "$ref": "#/$defs/semanticToken" },
+        "pacing": { "enum": ["slow", "measured", "conversational", "quick", "rapid"] },
+        "pitch": { "enum": ["low", "medium", "high"] },
+        "energy": { "enum": ["restrained", "calm", "conversational", "animated", "intense"] },
+        "texture": { "enum": ["clean", "warm", "dry", "airy", "gravelly", "raspy", "slightly-raspy", "synthetic", "radio-like"] }
+      }
+    },
+    "notifications": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "style": { "$ref": "#/$defs/semanticToken" }
+      }
+    }
+  }
+}

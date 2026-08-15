@@ -39,6 +39,101 @@ def first_example(path: Path) -> dict[str, str]:
     }
 
 
+def skill_instructions(path: Path) -> str:
+    """Return portable skill instructions without the discovery frontmatter."""
+    text = path.read_text(encoding="utf-8").strip()
+    if text.startswith("---"):
+        parts = text.split("---", 2)
+        if len(parts) == 3:
+            return parts[2].strip()
+    return text
+
+
+def humanize_voice(value: str) -> str:
+    return value.replace("_", " ").replace("-", " ")
+
+
+def summarize_voice_traits(traits: dict[str, str]) -> str:
+    return ", ".join(humanize_voice(value) for value in traits.values()) + "."
+
+
+def catalog_voice(voice: dict) -> dict | None:
+    if not voice:
+        return None
+    sound = voice.get("sound", {})
+    delivery = voice.get("delivery", {})
+    preferred = [
+        sound.get("register"),
+        sound.get("texture"),
+        delivery.get("pace"),
+        delivery.get("emotional_tone"),
+        delivery.get("cadence"),
+    ]
+    summary_parts = []
+    for value in preferred:
+        if value and value not in summary_parts:
+            summary_parts.append(value)
+    return {
+        "summary": ", ".join(humanize_voice(value) for value in summary_parts) + ".",
+        "soundSummary": summarize_voice_traits(sound),
+        "deliverySummary": summarize_voice_traits(delivery),
+        "sound": sound,
+        "delivery": delivery,
+        "mannerisms": voice.get("mannerisms", []),
+        "contextRules": voice.get("context_rules", {}),
+    }
+
+
+def catalog_behavioral_depth(persona: dict) -> dict | None:
+    """Expose optional depth metadata without inventing defaults for older personas."""
+    convictions = persona.get("convictions")
+    pushback = persona.get("pushback")
+    uncertainty = persona.get("uncertainty")
+    if not any((convictions, pushback, uncertainty)):
+        return None
+    return {
+        "convictions": convictions or [],
+        "pushback": pushback or {},
+        "uncertainty": uncertainty,
+    }
+
+
+PREVIEW_TOKENS = {
+    "mode": {"dark", "light"},
+    "accent": {"phosphor-green", "amber", "ice-blue", "paper-white"},
+    "typography": {"monospace", "sans-serif", "serif"},
+    "terminal": {"modern", "unix", "crt", "dos", "workstation", "minimal"},
+    "scanlines": {"none", "subtle", "medium"},
+    "glow": {"none", "low", "medium"},
+    "motion": {"none", "subtle", "moderate"},
+}
+
+
+def preview_token(group: str, value: str | None) -> str:
+    """Map open semantic metadata to a small, non-executable preview vocabulary."""
+    return value if value in PREVIEW_TOKENS[group] else "default"
+
+
+def catalog_experience(experience: dict) -> dict | None:
+    if not experience:
+        return None
+    visual = experience.get("visual", {})
+    terminal = experience.get("terminal", {})
+    motion = experience.get("motion", {})
+    return {
+        **experience,
+        "preview": {
+            "mode": preview_token("mode", visual.get("mode")),
+            "accent": preview_token("accent", visual.get("accent")),
+            "typography": preview_token("typography", visual.get("typography")),
+            "terminal": preview_token("terminal", terminal.get("style")),
+            "scanlines": preview_token("scanlines", terminal.get("scanlines")),
+            "glow": preview_token("glow", terminal.get("glow")),
+            "motion": preview_token("motion", motion.get("intensity")),
+        },
+    }
+
+
 def main() -> int:
     profile_index = {path.stem: load_yaml(path) for path in PROFILES.glob("*.yaml")}
     records = []
@@ -71,8 +166,12 @@ def main() -> int:
             "description": persona["description"],
             "profiles": persona["extends"],
             "presentation": persona["presentation"],
+            "voice": catalog_voice(persona.get("voice", {})),
+            "experience": catalog_experience(persona.get("experience", {})),
+            "behavioralDepth": catalog_behavioral_depth(persona),
             "preferences": persona["preferences"],
             "behavior": behavior,
+            "instructions": skill_instructions(package / "SKILL.md"),
             "example": first_example(package / "examples.md"),
             "image": f"images/{slug}.webp",
             "download": f"downloads/{slug}.zip",

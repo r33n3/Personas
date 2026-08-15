@@ -1,6 +1,6 @@
 # Experimental Narrative Styles
 
-> Status: design experiment. This document is non-normative and does not extend the v0.1 schemas.
+> Status: design experiment. This document is non-normative and does not extend the current schemas.
 
 Narrative style is a candidate presentation layer for framing an otherwise complete answer with genre devices such as scene-setting, pacing, or metaphor. It must not change what the agent decides, recommends, refuses, or completes.
 
@@ -48,7 +48,7 @@ If the user asks for a plain answer, the style disappears. No duel at dawn is re
 
 ## Reference composition
 
-The following notation is illustrative. It is intentionally **not** valid v0.1 persona YAML:
+The following notation is illustrative. It is intentionally **not** valid v0.2 persona YAML:
 
 ```yaml
 experimental_composition:

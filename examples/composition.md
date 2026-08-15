@@ -16,4 +16,4 @@ If `skeptical-engineer` requires a simpler alternative and `quality-focused-revi
 
 When requirements cannot coexist, prefer the higher-precedence instruction. For equal-precedence profile conflicts, choose the safer interpretation when one exists; otherwise report the conflict. Do not silently invent priority from list order.
 
-Weighted blends such as `greybeard: 0.7` plus `security-paranoid: 0.3` are a future experiment, not v0.1 conforming composition. We have enough fractions in distributed systems already.
+Weighted blends such as `greybeard: 0.7` plus `security-paranoid: 0.3` are a future experiment, not v0.2 conforming composition. We have enough fractions in distributed systems already.

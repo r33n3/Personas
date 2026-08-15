@@ -10,7 +10,7 @@
     "must", "must_not", "invariants"
   ],
   "properties": {
-    "schema_version": { "const": "0.1" },
+    "schema_version": { "const": "0.2" },
     "kind": { "const": "persona" },
     "name": { "$ref": "#/$defs/identifier" },
     "display_name": { "type": "string", "minLength": 1 },
@@ -33,6 +33,16 @@
       "minProperties": 1,
       "additionalProperties": { "$ref": "#/$defs/presentationValue" }
     },
+    "convictions": { "$ref": "#/$defs/nonEmptyIdentifiers" },
+    "pushback": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/actionIdentifier" },
+      "additionalProperties": { "$ref": "#/$defs/pushbackRule" }
+    },
+    "uncertainty": { "$ref": "#/$defs/uncertainty" },
+    "voice": { "$ref": "#/$defs/voice" },
+    "experience": { "$ref": "experience.schema.json" },
     "preferences": {
       "type": "array",
       "minItems": 1,
@@ -72,6 +82,65 @@
     "presentationValue": {
       "type": "string",
       "minLength": 1
+    },
+    "voice": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "sound": { "$ref": "#/$defs/voiceTraits" },
+        "delivery": { "$ref": "#/$defs/voiceTraits" },
+        "mannerisms": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "context_rules": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "$ref": "#/$defs/actionIdentifier" },
+          "additionalProperties": { "$ref": "#/$defs/voiceTraits" }
+        }
+      }
+    },
+    "voiceTraits": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/actionIdentifier" },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "pushbackRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strength", "actions"],
+      "properties": {
+        "strength": {
+          "enum": ["measured", "strong", "absolute"]
+        },
+        "actions": { "$ref": "#/$defs/nonEmptyIdentifiers" }
+      }
+    },
+    "uncertainty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["acknowledgment", "speculation", "confidence_language", "missing_context", "never"],
+      "properties": {
+        "acknowledgment": {
+          "enum": ["explicit", "concise", "contextual"]
+        },
+        "speculation": {
+          "enum": ["clearly_labeled", "minimized", "avoided"]
+        },
+        "confidence_language": {
+          "enum": ["calibrated", "plain", "formal"]
+        },
+        "missing_context": { "$ref": "#/$defs/nonEmptyIdentifiers" },
+        "never": { "$ref": "#/$defs/nonEmptyIdentifiers" }
+      }
     },
     "nonEmptyIdentifiers": {
       "type": "array",
