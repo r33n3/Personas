@@ -49,7 +49,7 @@ function App() {
     <header className="hero" id="top">
       <nav className="topbar" aria-label="Primary navigation">
         <a className="wordmark" href="#top" aria-label="Personas home"><span>PER</span><span>SON</span><span>AS</span></a>
-        <div className="nav-actions"><a href="https://github.com/r33n3/Personas" target="_blank" rel="noreferrer">GitHub ↗</a><a className="nav-download" href="#catalog">Browse agents</a></div>
+        <div className="nav-actions"><a href="#lab">The lab</a><a href="https://github.com/r33n3/Personas" target="_blank" rel="noreferrer">GitHub ↗</a><a className="nav-download" href="#catalog">Browse agents</a></div>
       </nav>
       <div className="hero-grid">
         <div className="hero-copy">
@@ -83,6 +83,15 @@ function App() {
           <div className="card-actions"><button onClick={() => setSelected(persona)}>Inspect card</button><a href={asset(persona.download)} download>Download ↓</a></div>
         </article>)}</div>
         {visible.length === 0 && <div className="empty"><strong>No coworkers found.</strong><span>They may be hiding from the sprint planning meeting.</span></div>}
+      </section>
+
+      <section className="attitude-lab" id="lab">
+        <div className="lab-heading"><div><p className="eyebrow">NOW LEAKING FROM R&amp;D</p><h2>The Attitude Lab</h2></div><p>We’re testing original archetypes and removable narrative styles before anybody adds seventeen genre sliders to the schema.</p></div>
+        <div className="lab-grid">
+          <article className="lab-card backlog-card"><span className="lab-sticker">BIG LIST</span><p className="eyebrow">EXPANSION CATALOG</p><h3>Archetypes, not impersonations.</h3><p>Cartoon hotheads, exhausted healers, flight directors, court jesters, risk managers, and several hundred other imaginary coworkers are waiting behind a quality gate.</p><a className="button secondary" href="https://github.com/r33n3/Personas/blob/main/design/ARCHETYPE_CATALOG.md">Inspect the backlog ↗</a></article>
+          <article className="lab-card noir-card"><span className="lab-sticker">EXPERIMENT 01</span><p className="eyebrow">NARRATIVE STYLE</p><h3>Film Noir entered the logs.</h3><p>The technical answer stays sober. The rain, suspicious timestamps, and world-weary deployment commentary are optional—and always removable.</p><a className="button primary" href="https://github.com/r33n3/Personas/blob/main/examples/narrative-film-noir.md">Read the case file ↗</a></article>
+        </div>
+        <p className="lab-rule"><strong>THE REMOVAL TEST:</strong> delete the genre framing. If the answer stops being complete, accurate, and actionable, the style has swallowed the work.</p>
       </section>
 
       <section className="how-it-works"><p className="eyebrow">SERIOUS INFRASTRUCTURE, SILLY DEMONSTRATION</p><h2>Behavior is policy.<br/>Persona is presentation.</h2><div className="principles">
