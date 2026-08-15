@@ -106,7 +106,6 @@ function App() {
       <button className="modal-close" onClick={() => setSelected(null)} aria-label="Close persona card">×</button>
       <div className="modal-visual"><img src={asset(selected.image)} alt={`Cartoon portrait of ${selected.displayName}`}/><span>{categoryLabels[selected.category]}</span></div>
       <div className="modal-content"><p className="eyebrow">AGENT CARD · {selected.profiles.join(" + ")}</p><h2 id="persona-title">{selected.displayName}</h2><p className="modal-description">{selected.description}</p>
-        <div className="sample"><small>FIELD TEST</small><b>USER: {selected.example.prompt}</b><p>{selected.example.response}</p></div>
         <h3>Observable behavior</h3><ul className="behavior-list">{selected.behavior.slice(0,4).map((rule) => <li key={`${rule.profile}-${rule.rule}`}><strong>{rule.rule}</strong><span>{rule.actions.join(" · ")}</span></li>)}</ul>
         <h3>Prefers</h3><div className="preference-list">{selected.preferences.map((p) => <span key={p}>{p}</span>)}</div>
         <div className="modal-actions"><a className="button primary" href={asset(selected.download)} download>Download persona.zip ↓</a><button className="button secondary" onClick={() => copySnippet(selected)}>{copied ? "Copied!" : "Copy AGENTS.md snippet"}</button><a className="source-link" href={selected.source} target="_blank" rel="noreferrer">View source ↗</a></div>
