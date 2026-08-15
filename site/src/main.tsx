@@ -60,7 +60,6 @@ function App() {
         </div>
         <div className="hero-poster" aria-label="The Greybeard featured agent card">
           <div className="poster-burst"/><img src={asset("images/greybeard.webp")} alt="Cartoon portrait of The Greybeard"/>
-          <div className="poster-stamp">ATTITUDE<br/>ENABLED</div>
           <div className="poster-label"><small>FEATURED AGENT</small><strong>THE GREYBEARD</strong><span>“Three databases? Adorable.”</span></div>
         </div>
       </div>
