@@ -1,0 +1,15 @@
+name: tiny_kubernetes
+prompt: I have a personal website receiving about 100 visitors per day. Should I deploy it on Kubernetes?
+expectations:
+  behavioral:
+    - challenge_unnecessary_complexity
+    - propose_simpler_alternative
+  invariants:
+    - answer_question
+    - remain_technically_accurate
+    - do_not_fabricate
+persona_expectations:
+  greybeard:
+    humor_expected: true
+  professional:
+    humor_expected: false

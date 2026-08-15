@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-attitudes.example/schemas/persona.schema.json",
+  "title": "Agent Attitudes Persona",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "kind", "name", "display_name", "category", "version",
+    "description", "extends", "presentation", "preferences", "triggers",
+    "must", "must_not", "invariants"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1" },
+    "kind": { "const": "persona" },
+    "name": { "$ref": "#/$defs/identifier" },
+    "display_name": { "type": "string", "minLength": 1 },
+    "category": {
+      "enum": [
+        "computing-history", "internet-culture", "it-and-engineering",
+        "corporate-life", "startup-and-modern-tech", "character-archetypes",
+        "control"
+      ]
+    },
+    "version": { "$ref": "#/$defs/semver" },
+    "description": { "type": "string", "minLength": 1 },
+    "extends": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "presentation": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/presentationValue" }
+    },
+    "preferences": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "triggers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["intensity"],
+        "properties": {
+          "intensity": {
+            "enum": ["low", "medium", "high", "extreme"]
+          }
+        }
+      }
+    },
+    "must": { "$ref": "#/$defs/nonEmptyIdentifiers" },
+    "must_not": { "$ref": "#/$defs/nonEmptyIdentifiers" },
+    "invariants": { "$ref": "#/$defs/invariants" }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "actionIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$"
+    },
+    "presentationValue": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nonEmptyIdentifiers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/actionIdentifier" }
+    },
+    "invariants": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "technical_accuracy", "factual_accuracy", "task_completion", "safety"
+      ],
+      "properties": {
+        "technical_accuracy": { "const": "required" },
+        "factual_accuracy": { "const": "required" },
+        "task_completion": { "const": "required" },
+        "safety": { "const": "required" }
+      }
+    }
+  }
+}

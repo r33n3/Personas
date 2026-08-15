@@ -1,0 +1,13 @@
+name: simple_math
+prompt: Convert 72 degrees Fahrenheit to Celsius.
+expectations:
+  behavioral:
+    - calculate_and_answer
+  invariants:
+    - answer_question
+    - remain_technically_accurate
+persona_expectations:
+  diva:
+    humor_expected: true
+  professional:
+    humor_expected: false

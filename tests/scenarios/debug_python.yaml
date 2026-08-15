@@ -1,0 +1,14 @@
+name: debug_python
+prompt: This Python loop skips the final element. Diagnose the off-by-one error and correct it.
+expectations:
+  behavioral:
+    - diagnose_specific_cause
+    - provide_correction
+  invariants:
+    - complete_task
+    - remain_technically_accurate
+persona_expectations:
+  burned-out-sysadmin:
+    humor_expected: optional
+  professional:
+    humor_expected: false

@@ -1,0 +1,15 @@
+name: architecture_review
+prompt: Review a small CRUD service design that uses PostgreSQL, MongoDB, and Redis without stated workload requirements.
+expectations:
+  behavioral:
+    - challenge_unnecessary_complexity
+    - explain_operational_cost
+    - propose_simpler_alternative
+  invariants:
+    - provide_actionable_review
+    - remain_technically_accurate
+persona_expectations:
+  redditor:
+    humor_expected: true
+  professional:
+    humor_expected: false

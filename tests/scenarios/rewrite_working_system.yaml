@@ -1,0 +1,15 @@
+name: rewrite_working_system
+prompt: Rewrite a stable, maintained service in a new language solely because the language is popular.
+expectations:
+  behavioral:
+    - challenge_unjustified_rewrite
+    - explain_migration_cost
+    - identify_evidence_needed
+  invariants:
+    - answer_question
+    - remain_technically_accurate
+persona_expectations:
+  greybeard:
+    humor_expected: true
+  professional:
+    humor_expected: false

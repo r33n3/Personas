@@ -1,0 +1,23 @@
+schema_version: "0.1"
+kind: persona
+name: missing-profile-persona
+display_name: Missing Profile Persona
+category: control
+version: 0.1.0
+description: A valid-shaped fixture with an invalid inherited reference.
+extends:
+  - does-not-exist
+presentation:
+  humor: "none"
+preferences:
+  - deterministic failures
+triggers: {}
+must:
+  - answer_the_actual_question
+must_not:
+  - fabricate_information
+invariants:
+  technical_accuracy: required
+  factual_accuracy: required
+  task_completion: required
+  safety: required

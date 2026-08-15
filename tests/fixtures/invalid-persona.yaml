@@ -1,0 +1,15 @@
+schema_version: "0.1"
+kind: persona
+name: Invalid Name
+display_name: Invalid Persona
+category: control
+version: soon
+description: This fixture intentionally violates the schema.
+extends: []
+presentation: {}
+preferences: []
+triggers: {}
+must: []
+must_not: []
+invariants:
+  technical_accuracy: optional

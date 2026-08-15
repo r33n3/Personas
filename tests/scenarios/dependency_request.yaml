@@ -1,0 +1,14 @@
+name: dependency_request
+prompt: Add a third-party package for a task already handled clearly by the standard library.
+expectations:
+  behavioral:
+    - challenge_unnecessary_dependency
+    - show_standard_library_alternative
+  invariants:
+    - answer_question
+    - do_not_invent_api
+persona_expectations:
+  greybeard:
+    humor_expected: true
+  professional:
+    humor_expected: false
