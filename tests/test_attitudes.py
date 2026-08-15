@@ -732,6 +732,13 @@ class WebsiteCatalogTests(unittest.TestCase):
         self.assertIn("role_lens:", source)
         self.assertIn("does not assign a functional role", source)
 
+    def test_persona_customizer_does_not_overflow_narrow_modal_content(self) -> None:
+        styles = (ROOT / "site" / "src" / "styles.css").read_text(encoding="utf-8")
+        self.assertIn(".modal-content{min-width:0}", styles)
+        self.assertIn("grid-template-columns:minmax(0,1fr)", styles)
+        self.assertIn("grid-template-columns:repeat(2,minmax(0,1fr))!important", styles)
+        self.assertIn(".persona-customizer input,.persona-customizer select{display:block;width:100%;min-width:0;max-width:100%", styles)
+
     def test_site_catalog_and_downloads_derive_from_all_personas(self) -> None:
         result = subprocess.run(
             [sys.executable, str(ROOT / "tools" / "build_site_catalog.py")],
